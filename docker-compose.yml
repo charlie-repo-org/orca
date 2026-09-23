@@ -1,0 +1,19 @@
+services:
+  orca:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: orca-web
+    restart: unless-stopped
+    ports:
+      - "6768:6768"
+    volumes:
+      - orca-workspace:/workspace
+      - orca-config:/root/.config/orca
+    environment:
+      - ORCA_BACKGROUND_LAUNCH=1
+      - ELECTRON_ENABLE_LOGGING=1
+
+volumes:
+  orca-workspace:
+  orca-config:

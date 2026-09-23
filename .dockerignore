@@ -1,0 +1,12 @@
+node_modules
+out
+dist
+build
+.git
+.github
+*.log
+.DS_Store
+mobile
+cloud
+coverage
+tmp
