@@ -3,25 +3,42 @@ FROM node:24-bookworm AS builder
 
 WORKDIR /app
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive \
+    HUSKY=0
 
-# Install build dependencies
+# Install build dependencies for native modules and Electron rebuild
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     python3 \
     git \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatspi2.0-0 \
+    libdrm2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libnss3 \
     libsecret-1-dev \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxkbcommon0 \
+    libxrandr2 \
+    libxss1 \
     pkg-config \
+    rpm \
     && rm -rf /var/lib/apt/lists/*
 
 # Enable pnpm
 RUN corepack enable && corepack prepare pnpm@12.0.0 --activate
 
-# Copy dependency definitions
+# Copy dependency definitions and config/patches needed by pnpm install & rebuild
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml* ./
+COPY config ./config
+
 RUN pnpm install --frozen-lockfile
 
-# Copy application source
+# Copy remaining application source
 COPY . .
 
 # Build web client and electron bundles
