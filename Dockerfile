@@ -41,10 +41,10 @@ RUN pnpm install --frozen-lockfile
 # Copy remaining application source
 COPY . .
 
-# Build web client and electron bundles
-RUN pnpm run build:web-from-renderer
-RUN pnpm run build:electron-vite
+# Build cli, electron bundles, and web client
 RUN pnpm run build:cli
+RUN pnpm run build:electron-vite
+RUN pnpm run build:web-from-renderer
 
 # Stage 2: Production Runner
 FROM node:24-bookworm-slim AS runner
