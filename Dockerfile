@@ -89,6 +89,9 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/out ./out
 COPY --from=builder /app/src ./src
 
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Create workspace directory for projects and configuration
 RUN mkdir -p /workspace /root/.config/orca
 
@@ -96,5 +99,4 @@ WORKDIR /app
 
 EXPOSE 6768
 
-# Run Orca in headless serve mode with Xvfb
-CMD ["xvfb-run", "--auto-servernum", "--server-args=-screen 0 1024x768x24", "npx", "electron", ".", "--no-sandbox", "--headless", "--serve", "--serve-ws-port=6768", "--serve-pairing-address=0.0.0.0"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
