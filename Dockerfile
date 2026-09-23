@@ -80,6 +80,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxss1 \
     procps \
     util-linux \
+    xauth \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy built application & dependencies from builder
