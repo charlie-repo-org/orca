@@ -57,12 +57,15 @@ ENV DEBIAN_FRONTEND=noninteractive \
     ELECTRON_DISABLE_SANDBOX=1 \
     NODE_ENV=production
 
-# Install runtime dependencies for Electron, Xvfb, Git, and terminal utilities
+# Install runtime dependencies for Electron, Xvfb, Git, Tailscale, and terminal utilities
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
     ca-certificates \
     curl \
     git \
+    gnupg \
+    iptables \
+    iproute2 \
     xvfb \
     dbus-x11 \
     libasound2 \
@@ -79,8 +82,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxrandr2 \
     libxss1 \
     procps \
+    sqlite3 \
     util-linux \
     xauth \
+    && curl -fsSL https://pkgs.tailscale.com/stable/debian/bookworm.noarmor.gpg | tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null \
+    && curl -fsSL https://pkgs.tailscale.com/stable/debian/bookworm.tailscale-keyring.list | tee /etc/apt/sources.list.d/tailscale.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends tailscale \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy built application & dependencies from builder

@@ -7,10 +7,16 @@ services:
     restart: unless-stopped
     ports:
       - "6768:6768"
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    devices:
+      - /dev/net/tun:/dev/net/tun
     volumes:
       - orca-workspace:/workspace
       - orca-config:/root/.config
       - orca-local:/root/.local
+      - orca-tailscale:/var/lib/tailscale
     environment:
       - ORCA_BACKGROUND_LAUNCH=1
       - ELECTRON_ENABLE_LOGGING=1
@@ -19,3 +25,4 @@ volumes:
   orca-workspace:
   orca-config:
   orca-local:
+  orca-tailscale:
