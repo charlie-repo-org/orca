@@ -14,6 +14,19 @@ export HOME=/root
 export ELECTRON_DISABLE_SANDBOX=1
 export ORCA_BACKGROUND_LAUNCH=1
 
+# Configure Git user if not already configured
+if [ -n "${GIT_USER_NAME:-}" ]; then
+  git config --global user.name "$GIT_USER_NAME"
+elif ! git config --global user.name >/dev/null 2>&1; then
+  git config --global user.name "Orca User"
+fi
+
+if [ -n "${GIT_USER_EMAIL:-}" ]; then
+  git config --global user.email "$GIT_USER_EMAIL"
+elif ! git config --global user.email >/dev/null 2>&1; then
+  git config --global user.email "orca@localhost"
+fi
+
 EXTRA_ARGS=()
 if [[ "${ORCA_NO_PAIRING:-0}" == "1" || "${ORCA_NO_PAIRING:-false}" == "true" ]]; then
   EXTRA_ARGS+=(--serve-no-pairing)
