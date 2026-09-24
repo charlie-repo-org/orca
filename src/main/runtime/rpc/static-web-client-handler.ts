@@ -70,6 +70,7 @@ async function handleStaticRequest(
     STATIC_WEB_CONTENT_TYPES.get(extname(absolutePath)) ?? 'application/octet-stream'
   )
   response.setHeader('Content-Length', fileStat.size)
+  response.setHeader('Permissions-Policy', 'clipboard-read=(self), clipboard-write=(self)')
   response.setHeader(
     'Cache-Control',
     pathname.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : 'no-cache'
