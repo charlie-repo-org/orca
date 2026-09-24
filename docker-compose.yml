@@ -9,7 +9,8 @@ services:
       - "6768:6768"
     volumes:
       - orca-workspace:/workspace
-      - orca-config:/root/.config/orca
+      - orca-config:/root/.config
+      - orca-local:/root/.local
     environment:
       - ORCA_BACKGROUND_LAUNCH=1
       - ELECTRON_ENABLE_LOGGING=1
@@ -17,3 +18,4 @@ services:
 volumes:
   orca-workspace:
   orca-config:
+  orca-local:
