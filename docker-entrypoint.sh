@@ -45,18 +45,24 @@ if [ -n "$GIT_PASS" ]; then
   export GH_TOKEN="${GH_TOKEN:-$GIT_PASS}"
 fi
 
-# Start Tailscale if configured or existing state exists
+# Always start Tailscale daemon in background
+echo "[orca-docker] Starting Tailscale daemon..."
+mkdir -p /var/lib/tailscale /var/run/tailscale /run/tailscale /var/log
+ln -sf /var/run/tailscale/tailscaled.sock /run/tailscale/tailscaled.sock 2>/dev/null || true
+
+TS_TUN_FLAG=""
+if [ ! -c /dev/net/tun ]; then
+  TS_TUN_FLAG="--tun=userspace-networking"
+fi
+
+tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock $TS_TUN_FLAG > /var/log/tailscaled.log 2>&1 &
+sleep 2
+
 TS_KEY="${TS_AUTHKEY:-${TAILSCALE_AUTHKEY:-}}"
 TS_HOST="${TS_HOSTNAME:-${TAILSCALE_HOSTNAME:-orca-server}}"
-if [ -n "$TS_KEY" ] || [ -f "/var/lib/tailscale/tailscaled.state" ]; then
-  echo "[orca-docker] Starting Tailscale daemon..."
-  mkdir -p /var/lib/tailscale /run/tailscale
-  tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/run/tailscale/tailscaled.sock > /var/log/tailscaled.log 2>&1 &
-  sleep 2
-  if [ -n "$TS_KEY" ]; then
-    echo "[orca-docker] Connecting Tailscale with auth key..."
-    tailscale --socket=/run/tailscale/tailscaled.sock up --authkey="$TS_KEY" --hostname="$TS_HOST" --accept-routes=true || true
-  fi
+if [ -n "$TS_KEY" ]; then
+  echo "[orca-docker] Connecting Tailscale with auth key..."
+  tailscale up --authkey="$TS_KEY" --hostname="$TS_HOST" --accept-routes=true || true
 fi
 
 EXTRA_ARGS=()
